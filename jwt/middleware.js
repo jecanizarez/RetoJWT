@@ -1,4 +1,5 @@
 let jwt = require( 'jsonwebtoken' );
+const  [insertUser, getUser, getUsers, updateUser, deleteUser] = require('./controller/user');
 const config = require( './config.js' );
 
 // Función encargada de realizar la validación del token y que es directamente consumida por server.js
@@ -38,6 +39,18 @@ let checkToken = ( req, res, next ) => {
 
 };
 
+let isAdmin = async (req, res, next) => {
+  let user =  await getUser(req.body.nombre);
+  user = user[0];
+  if(user.rol == 'admin'){
+    next();
+  }
+  else{
+    res.status(401).send("No esta Autorizado rufian");
+  }
+}
+
 module.exports = {
-  checkToken: checkToken
+  checkToken: checkToken,
+  isAdmin:isAdmin
 }

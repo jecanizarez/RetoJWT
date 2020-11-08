@@ -17,7 +17,7 @@ async function getUsers() {
     return users;
 }
 async function insertUser(user) {
-    user.contraseña  = await bcrypt.hash(user.contraseña, saltRounds );
+    user.password  = await bcrypt.hash(user.password, saltRounds );
     return mongoUtils.conn().then((client) => { 
         return client.db(database).collection(collection).insertOne(user).finally(() => client.close());
     });
@@ -29,7 +29,7 @@ async function getUser(usuario){
         const user =  await client
         .db(database)
         .collection(collection)
-        .find({ usuario : usuario})
+        .find({ nombre : usuario})
         .toArray()
         .finally(() => client.close());
         return user;
@@ -51,13 +51,13 @@ async function updateUser(iduser, newuser){
         return "El mensaje a actualizar no existe";
     }
 }
-async function deleteUser(iduser){
+async function deleteUser(usuario){
     try {
         const client = await mongoUtils.conn(); 
         const user =  await client
         .db(database)
         .collection(collection)
-        .deleteOne({_id :ObjectId(iduser+"")})
+        .deleteOne({ nombre : usuario })
         .finally(() => client.close());
         return user;
 
@@ -67,9 +67,4 @@ async function deleteUser(iduser){
 
 }
 
-
-module.exports.insertUser = insertUser;
-module.exports.getUsers = getUsers;
-module.exports.getUser = getUser;
-module.exports.updateUser = updateUser;
-module.exports.deleteUser = deleteUser;
+module.exports = [insertUser, getUser, getUsers, updateUser, deleteUser];
